@@ -35,8 +35,10 @@
             currentLink.text = currentValue.replace(urlMatcher, "").replace(/(^ +)|( +$)/g, "");
 
             return accumulator.concat(currentLink);
+          } else if(currentValue){
+            // if no URL was found but line is non-blank, just output the text
+            return accumulator.concat({text: currentValue});
           } else {
-            // if no URL was found, ignore the line of text
             return accumulator;
           }
         }, []);
@@ -51,7 +53,8 @@
         $("<ul>").appendTo(output);
 
         parseText(e.target.value).forEach(function(link) {
-          $(`<li><a href="${link.url}">${link.text}</a></li>`).appendTo(output.children()[0]);
+          const contents = link.url ? `<li><a href="${link.url}">${link.text}</a></li>` : `<li>${link.text}</li>`;
+          $(contents).appendTo(output.children()[0]);
         });
 
         $("#output-text").val(output.html());
