@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Link-Parser</title>
+    <style>
+    textarea {
+      height: 20em;
+      width: 80%;
+    }
+    </style>
+  </head>
+  <body>
+    <h1>Link Parser</h1>
+    <p>Enter 1+ lines of text. Each line will be parsed for a URL and will generate an a tag with the remainder of the line as the link text</p>
+    <textarea id="input-text"></textarea>
+    <div id="output"></div>
+    <textarea id="output-text"></textarea>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+
+      function parseText(text){
+        const lines = text.split(/\r?\n/);
+        const parsedLines = lines.reduce(function(accumulator, currentValue){
+
+          const urlMatcher = /(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gi;
+          const match = urlMatcher.exec(currentValue);
+
+          if(match) {
+            const currentLink = {url: match[0]};
+
+            // remove URL portions from string and strip leading and trailing spaces
+            currentLink.text = currentValue.replace(urlMatcher, "").replace(/(^ +)|( +$)/g, "");
+
+            return accumulator.concat(currentLink);
+          } else {
+            // if no URL was found, ignore the line of text
+            return accumulator;
+          }
+        }, []);
+
+        return parsedLines;
+      }
+
+      $("#input-text").on("keyup", function(e) {
+
+        // make a new output container
+        const output = $(`<div id="output">`);
+        $("<ul>").appendTo(output);
+
+        parseText(e.target.value).forEach(function(link) {
+          $(`<li><a href="${link.url}">${link.text}</a></li>`).appendTo(output.children()[0]);
+        });
+
+        $("#output-text").val(output.html());
+
+        // swap existing container for newly updated one
+        $("#output").replaceWith(output);
+      });
+    });
+
+    </script>
+  </body>
+</html>
