@@ -53,7 +53,7 @@
         $("<ul>").appendTo(output);
 
         parseText(e.target.value).forEach(function(link) {
-          const contents = link.url ? `<li><a href="${link.url}">${link.text}</a></li>` : `<li>${link.text}</li>`;
+          const contents = link.url ? `<li><a href="${link.url}">${link.text || link.url}</a></li>` : `<li>${link.text}</li>`;
           $(contents).appendTo(output.children()[0]);
         });
 
